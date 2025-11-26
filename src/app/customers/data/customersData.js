@@ -1,0 +1,109 @@
+const customersData = [
+    {
+    id:'1',
+    customerName:'Venkatesh',
+    phone:'9877112244',
+    balance:780,
+    city:'Hyderabad'
+},
+{
+    id:'2',
+    customerName:'Harish',
+    phone:'9845123478',
+    balance:-200,
+    city:'Warangal'
+},
+{
+    id:'3',
+    customerName:'Chaitanya',
+    phone:'9123415678',
+    balance:1450,
+    city:'Vijayawada'
+},
+{
+    id:'4',
+    customerName:'Deepak',
+    phone:'9011223345',
+    balance:300,
+    city:'Nizamabad'
+},
+{
+    id:'5',
+    customerName:'Santosh',
+    phone:'9988123499',
+    balance:2650,
+    city:'Karimnagar'
+},
+{
+    id:'6',
+    customerName:'Naveen',
+    phone:'9877001235',
+    balance:0,
+    city:'Guntur'
+},
+{
+    id:'7',
+    customerName:'Tarun',
+    phone:'9666112299',
+    balance:950,
+    city:'Tirupati'
+},
+{
+    id:'8',
+    customerName:'Srikanth',
+    phone:'9811002233',
+    balance:1875,
+    city:'Khammam'
+},
+{
+    id:'9',
+    customerName:'Vamsi',
+    phone:'9033112245',
+    balance:-80,
+    city:'Kurnool'
+},
+{
+    id:'10',
+    customerName:'Raghu',
+    phone:'9944556677',
+    balance:340,
+    city:'Nellore'
+},
+{
+    id:'11',
+    customerName:'Arjun',
+    phone:'9988771122',
+    balance:2100,
+    city:'Rajahmundry'
+},
+{
+    id:'12',
+    customerName:'Teja',
+    phone:'9898445566',
+    balance:630,
+    city:'Visakhapatnam'
+},
+{
+    id:'13',
+    customerName:'Naresh',
+    phone:'9322456678',
+    balance:160,
+    city:'Miryalaguda'
+},
+{
+    id:'14',
+    customerName:'Yogesh',
+    phone:'9677554433',
+    balance:2750,
+    city:'Adilabad'
+},
+{
+    id:'15',
+    customerName:'Ravi',
+    phone:'9922113344',
+    balance:1290,
+    city:'Mahbubnagar'
+}
+
+]
+export default customersData;
