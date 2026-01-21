@@ -15,7 +15,7 @@ import {
 function SideSheet({open,closeSheetHandler,sideSheetData,children}) {
   return (
     <Sheet open={open}>
-      <SheetContent className="w-[300px] sm:w-[400px]">
+      <SheetContent className="!w-[650px] !max-w-none px-2">
         <SheetHeader>
           <SheetTitle>{sideSheetData.title}</SheetTitle>
         </SheetHeader>

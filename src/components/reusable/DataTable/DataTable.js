@@ -1,11 +1,10 @@
 "use client"
-import React from "react"
+import React, { useEffect } from "react"
 import {
   flexRender,
   getCoreRowModel,
   useReactTable,
   getFilteredRowModel,
-  getPaginationRowModel,
 } from "@tanstack/react-table"
 
 import {
@@ -19,6 +18,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import DatePicker from "../DatePicker"
 
 
 
@@ -27,9 +27,15 @@ export function DataTable({
   data,
   filter,
   button,
-  renderRowActions
+  renderRowActions,
+  showFooter,
+  height=400,
+  datePicker,
+  getDateValue,
+  selected = ()=>{return}
 }) {
-  const [columnFilters, setColumnFilters] = React.useState([])
+  const [columnFilters, setColumnFilters] = React.useState([]);
+  const [rowSelection, setRowSelection] = React.useState({})
 //   const [pagination, setPagination] = React.useState({
 //   pageIndex: 0,
 //   pageSize: 7,
@@ -40,14 +46,17 @@ export function DataTable({
     getCoreRowModel: getCoreRowModel(),
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
-    // getPaginationRowModel: getPaginationRowModel(),
-    // onPaginationChange:setPagination,
+    onRowSelectionChange:setRowSelection,
     state: {
       columnFilters,
-      // pagination,
+      rowSelection,
     },
   })
-
+  useEffect(()=>{
+    const selectedData = table.getSelectedRowModel().rows.map(row => row.original)
+    selected(selectedData)
+    
+  },[selected,table,rowSelection])
   return (
     <div>
       {filter&&
@@ -60,10 +69,13 @@ export function DataTable({
           }
           className="max-w-sm"
         />
-        {button?.show&& <Button variant={button.variant}>{button.icon}{button.label}</Button>}
+        <>
+          {button?.show&& <Button variant={button.variant}>{button.icon}{button.label}</Button>}
+          {datePicker?.show && <DatePicker getDateValue={getDateValue}/>}
+        </>
       </div>}
       <div className="overflow-hidden rounded-md border">
-        <ScrollArea className="h-[400px] w-full rounded-md border">
+        <ScrollArea className={`h-[420px] w-full rounded-md border`}>
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -112,11 +124,11 @@ export function DataTable({
         </Table>
         </ScrollArea>
       </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
+      {showFooter&&<div className="flex items-center justify-end space-x-2 py-4">
         <div className="text-muted-foreground flex-1 text-sm">
           Total {table.getFilteredRowModel().rows.length} row(s).
         </div>
-      </div>
+      </div>}
     </div>
   )
 }

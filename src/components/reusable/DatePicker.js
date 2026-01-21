@@ -1,67 +1,80 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { CalendarIcon } from "lucide-react"
+import * as React from "react";
+import { CalendarIcon } from "lucide-react";
 
-import { Button } from "@/components/ui/button"
-import { Calendar } from "@/components/ui/calendar"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover"
-
+} from "@/components/ui/popover";
+import { useIndentSelectedDate } from "@/store/store";
 function formatDate(date) {
   if (!date) {
-    return ""
+    return "";
   }
   // date.setDate(date.getDate()+1)
   return date.toLocaleDateString("en-US", {
     day: "2-digit",
     month: "long",
     year: "numeric",
-  })
+  });
 }
 
 function isValidDate(date) {
   if (!date) {
-    return false
+    return false;
   }
-  return !isNaN(date.getTime())
+  return !isNaN(date.getTime());
 }
 
-export default function DatePicker({label}) {
+export default React.memo(function DatePicker({ label, getDateValue }) {
   const firstDate = new Date();
-  firstDate.setDate(firstDate.getDate()+1)
-  const [open, setOpen] = React.useState(false)
-  const [date, setDateValue] = React.useState(firstDate)
-  const [month, setMonth] = React.useState(date)
-  const [value, setValue] = React.useState(formatDate(date))
+  firstDate.setDate(firstDate.getDate() + 1);
+  const [open, setOpen] = React.useState(false);
+  const [date, setDateValue] = React.useState(firstDate);
+  const [month, setMonth] = React.useState(date);
+  const [value, setValue] = React.useState(formatDate(date));
+  const fetchDone = React.useRef(false);
+  const updateDate = useIndentSelectedDate((state) => state.updateDate);
+  const getSelectedDate = (e) => {
+    const date = new Date(e.target.value);
+    setValue(e.target.value);
+    if (isValidDate(date)) {
+      setDateValue(date);
+      setMonth(date);
+    }
+  };
+  React.useEffect(() => {
+    if (fetchDone.current) {
+      return;
+    }
+    updateDate(formatDate(date));
+    getDateValue(formatDate(date));
+    fetchDone.current = true;
+  }, [date, getDateValue, updateDate]);
   return (
     <div className="flex flex-col gap-3">
-      {label&&<Label htmlFor="date" className="px-1">
-        {label}
-      </Label>}
+      {label && (
+        <Label htmlFor="date" className="px-1">
+          {label}
+        </Label>
+      )}
       <div className="relative flex gap-2">
         <Input
           id="date"
           value={value}
           placeholder="June 01, 2025"
           className="bg-background pr-10"
-          onChange={(e) => {
-            const date = new Date(e.target.value)
-            setValue(e.target.value)
-            if (isValidDate(date)) {
-              setDateValue(date)
-              setMonth(date)
-            }
-          }}
+          onChange={getSelectedDate}
           onKeyDown={(e) => {
             if (e.key === "ArrowDown") {
-              e.preventDefault()
-              setOpen(true)
+              e.preventDefault();
+              setOpen(true);
             }
           }}
         />
@@ -88,15 +101,18 @@ export default function DatePicker({label}) {
               captionLayout="dropdown"
               month={month}
               onMonthChange={setMonth}
+              endMonth={new Date("2030-12-31")}
               onSelect={(date) => {
-                setDateValue(date)
-                setValue(formatDate(date))
-                setOpen(false)
+                fetchDone.current = false;
+                getDateValue(formatDate(date));
+                setDateValue(date);
+                setValue(formatDate(date));
+                setOpen(false);
               }}
             />
           </PopoverContent>
         </Popover>
       </div>
     </div>
-  )
-}
+  );
+});

@@ -1,6 +1,6 @@
 import React from 'react'
 import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from './ui/sidebar'
-import { LayoutDashboard,ReceiptText,TicketPercent,Bot,BellRing,ShoppingBag,Package,Database,Milk,IndianRupee,BanknoteArrowDown,UserRound, LogOut } from 'lucide-react'
+import { LayoutDashboard,ReceiptText,Bot,ShoppingBag,Package,Database,Milk,IndianRupee,BanknoteArrowDown,UserRound, LogOut } from 'lucide-react'
 import Link from 'next/link'
 const menuItems = [
   {title:'Dashboard',url:'/',icon:LayoutDashboard},
@@ -11,8 +11,6 @@ const menuItems = [
   {title:'Payments',url:'/payments',icon:IndianRupee},
   {title:'Customers',url:'/customers',icon:UserRound},
   {title:'Expense',url:'/',icon:BanknoteArrowDown},
-  {title:'Reminders',url:'/',icon:BellRing},
-  {title:'Offers',url:'/',icon:TicketPercent}
 ]
 function SideNav() {
   return (

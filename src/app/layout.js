@@ -4,6 +4,8 @@ import SideNav from "@/components/SideNav";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import NavBar from "@/components/NavBar";
 import { Separator } from "@/components/ui/separator";
+import AlertPopUp from "@/components/reusable/Toaster/AlertPopUp";
+import Providers from "./providers";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -24,6 +26,8 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased flex`}>
+        <AlertPopUp/>
+        <Providers>
         <SidebarProvider>
           <SideNav/>
           <main className='w-full'>
@@ -34,6 +38,7 @@ export default function RootLayout({ children }) {
             </div>
           </main>
         </SidebarProvider>
+        </Providers>
       </body>
     </html>
   );

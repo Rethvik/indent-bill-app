@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -6,26 +6,40 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
 
-export function Modal({open,closeDialogHandler,children,dialogData}) {
+export function Modal({
+  open,
+  closeDialogHandler,
+  children,
+  dialogData,
+  cancelButtonHandler,
+}) {
   return (
-    <Dialog className='w-300' open={open}>
-        <DialogContent className={dialogData.heigWidt}>
-          <DialogHeader>
-            <DialogTitle>{dialogData.title}</DialogTitle>
-            <DialogDescription>
-              {dialogData.desc}
-            </DialogDescription>
-          </DialogHeader>
-          <div>
-            {children}
-          </div>
-          <DialogFooter>
-            {dialogData.cancelButtonTitle &&<Button variant='destructive' onClick={()=>closeDialogHandler()}>{dialogData.cancelButtonTitle}</Button>}
-            {dialogData.okButtonTitle && <Button variant='outline' onClick={()=>closeDialogHandler()} type="submit">{dialogData.okButtonTitle}</Button>}
-          </DialogFooter>
-        </DialogContent>
+    <Dialog open={open}>
+      <DialogContent className={`${dialogData?.heigWidt}`}>
+        <DialogHeader>
+          <DialogTitle>{dialogData?.title}</DialogTitle>
+          <DialogDescription>{dialogData?.desc}</DialogDescription>
+        </DialogHeader>
+        <div>{children}</div>
+        <DialogFooter>
+          {dialogData?.cancelButtonTitle && (
+            <Button variant="destructive" onClick={() => cancelButtonHandler()}>
+              {dialogData.cancelButtonTitle}
+            </Button>
+          )}
+          {dialogData?.okButtonTitle && (
+            <Button
+              variant="outline"
+              onClick={() => closeDialogHandler()}
+              type="submit"
+            >
+              {dialogData.okButtonTitle}
+            </Button>
+          )}
+        </DialogFooter>
+      </DialogContent>
     </Dialog>
-  )
+  );
 }
