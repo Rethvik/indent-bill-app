@@ -144,7 +144,6 @@ const productSWIPEAPI = async () => {
   // CALL PRODUCTS SWIPE API HERE
   // ALL DATA MANIPULATION SHOULD BE DONE HERE
   const productsListResp = await getListOfProducts();
-  console.log(productsListResp);
   if (productsListResp.success) {
     const products = productsListResp.data.items.map((product) => {
       return {
@@ -249,6 +248,8 @@ const getProducts = async () => {
         if (productsResult.success) {
           const result = await loadProducts(productsResult.products);
           return result;
+        } else {
+          return productsResult;
         }
       } else {
         const workbook = XLSX.readFile(productsFilePath);

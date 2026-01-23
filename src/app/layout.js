@@ -25,19 +25,20 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased flex`}>
-        <AlertPopUp/>
+        className={`${geistSans.variable} ${geistMono.variable} antialiased flex`}
+      >
+        <AlertPopUp />
         <Providers>
-        <SidebarProvider>
-          <SideNav/>
-          <main className='w-full'>
-            <div className="w-full px-2">
-              <NavBar/>
-              <Separator/>
-              {children}
-            </div>
-          </main>
-        </SidebarProvider>
+          <SidebarProvider>
+            <SideNav />
+            <main className="w-full">
+              <div className="w-full px-2">
+                <NavBar />
+                <Separator />
+                {children}
+              </div>
+            </main>
+          </SidebarProvider>
         </Providers>
       </body>
     </html>
