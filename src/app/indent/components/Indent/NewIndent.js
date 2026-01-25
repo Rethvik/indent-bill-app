@@ -53,19 +53,19 @@ function NewIndent({ saveButtonHandler, closeDialogHandler }) {
     if (e.key === "ArrowDown") {
       if (index < currentList.length - 1) {
         e.preventDefault();
-        inputrefs.current[index + 1].current.focus();
+        inputrefs.current[index + 1].focus();
       } else {
         e.preventDefault();
-        inputrefs.current[0].current.focus();
+        inputrefs.current[0].focus();
       }
     }
     if (e.key === "ArrowUp") {
       e.preventDefault();
       if (index > 0) {
-        inputrefs.current[index - 1].current.focus();
+        inputrefs.current[index - 1].focus();
       } else {
         e.preventDefault();
-        inputrefs.current[currentList.length - 1].current.focus();
+        inputrefs.current[currentList.length - 1].focus();
       }
     }
   };
@@ -118,7 +118,7 @@ function NewIndent({ saveButtonHandler, closeDialogHandler }) {
                   <div key={item} className="flex justify-between">
                     <FieldLabel htmlFor={item.id}>{item}</FieldLabel>
                     <Input
-                      ref={inputrefs.current[index]}
+                      ref={(el) => (inputrefs.current[index] = el)}
                       onKeyDown={(e) => onKeyDownHandler(e, index)}
                       value={indent[item] || ""}
                       onChange={quantityChangeHandler}
