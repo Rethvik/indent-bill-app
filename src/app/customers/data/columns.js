@@ -33,15 +33,7 @@ const columns = [
       </div>
     ),
   },
-  {
-    accessorKey: "city",
-    header: () => (
-      <div className="flex items-center">
-        <MapPin className="mr-1" size={15} />
-        Address
-      </div>
-    ),
-  },
+
   // {
   //     accessorKey:'balance',
   //     header:()=><div className="flex items-center"><ReceiptIndianRupee className='mr-1' size={15}/>Balance</div>,

@@ -15,7 +15,6 @@ import {
 import {
   LayoutDashboard,
   ReceiptText,
-  Bot,
   ShoppingBag,
   Package,
   Database,
