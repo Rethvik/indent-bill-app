@@ -1,8 +1,7 @@
 "use client";
 import DataTable from "@/components/reusable/DataTable/DataTable";
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useState } from "react";
 import columns from "./data/columns";
-import indentData from "./data/indentData";
 import actionButtons from "./actionButtons";
 import { Modal } from "@/components/reusable/Dialog/Modal";
 import ViewIndent from "./components/Dialogs/ViewIndent";
@@ -17,10 +16,12 @@ import Loader from "@/components/reusable/Loader/Loader";
 function Indent() {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showViewDialog, setShowViewDialog] = useState(false);
-  const [showAddDialog, setShowAddDialog] = useState(false);
+  const [showAddEditDialog, setShowAddEditDialog] = useState(false);
   const [rowData, setRowData] = useState({});
   const [indent, setIndent] = useState([]);
   const [viewData, setViewData] = useState([]);
+  const [customerIndent, setCustomerIndent] = useState({});
+  const [type, setType] = useState("");
   const loader = useShowLoader((state) => state.loader);
   const showLoader = useShowLoader((state) => state.showLoader);
   const showMessage = useShowMessage((state) => state.showMessage);
@@ -47,18 +48,26 @@ function Indent() {
     },
     [showLoader, showMessage],
   );
-  const viewDialogHandler = async (row) => {
-    setRowData(row);
-    setShowViewDialog((prev) => !prev);
-    const id = { id: row.id, date };
-    const params = new URLSearchParams(id);
+
+  // To get the indent of customer based on id
+  const getIndentOfCustomer = async (id, date) => {
+    let params = { id, date };
+    params = new URLSearchParams(params);
     const response = await fetch(
       `http://localhost:3000/api/indent/get?${params}`,
       { method: "GET" },
     );
     const result = await response.json();
+    return result;
+  };
+
+  // To see the customer indent
+  const viewDialogHandler = async (row) => {
+    setRowData(row);
+    const result = await getIndentOfCustomer(row.id, date);
     if (result.success) {
       setViewData(result.data);
+      setShowViewDialog((prev) => !prev);
     } else {
       showMessage("error", result.message);
       setViewData([]);
@@ -68,14 +77,7 @@ function Indent() {
     setShowViewDialog(false);
   };
 
-  const deleteDialogHandler = (row) => {
-    setRowData(row);
-    setShowDeleteDialog(true);
-  };
-  const closeDeleteDialogHandler = () => {
-    setShowDeleteDialog(false);
-  };
-
+  // To delete the customer indent
   const deleteIndent = async () => {
     const data = { id: rowData?.id, date };
     const params = new URLSearchParams(data);
@@ -92,33 +94,78 @@ function Indent() {
     }
     closeDeleteDialogHandler();
   };
-
-  const addDialogHandler = (row) => {
+  const deleteDialogHandler = (row) => {
     setRowData(row);
-    setShowAddDialog((prev) => !prev);
+    setShowDeleteDialog(true);
+  };
+  const closeDeleteDialogHandler = () => {
+    setShowDeleteDialog(false);
   };
 
+  // To edit the customer indent
+  const editDialogHandler = async (row) => {
+    setRowData(row);
+    setType("edit");
+    const result = await getIndentOfCustomer(row.id, date);
+    if (result.success) {
+      let indentOfCustomer = {};
+      const data = result.data;
+      for (let i = 0; i < data.length; i++) {
+        indentOfCustomer = {
+          ...indentOfCustomer,
+          [data[i].product]: data[i].quantity,
+        };
+      }
+      setCustomerIndent(indentOfCustomer);
+      setShowAddEditDialog(true);
+    } else {
+      showMessage("error", result.message);
+    }
+  };
+
+  const openAddDialogHandler = () => {
+    setShowAddEditDialog(true);
+    setType("new");
+  };
+  const closeAddEditDialogHandler = () => {
+    setShowAddEditDialog(false);
+    setCustomerIndent({});
+    setType("");
+  };
+  const addIndentButtonHandler = (row) => {
+    setRowData(row);
+    openAddDialogHandler();
+  };
   const getDateValue = (value) => {
     getIndentData(value);
   };
+
+  // To save the newly added or edited indent
   const saveButtonHandler = async (indent) => {
-    console.log(indent);
-    addDialogHandler();
-    showLoader(true);
-    const response = await fetch("http://localhost:3000/api/indent/save", {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ date, data: { ...rowData, items: indent } }),
-    });
-    const result = await response.json();
-    showLoader(false);
-    if (result.success) {
-      showMessage("success", result.message);
-      getIndentData(date);
+    if (Object.keys(indent).length > 0) {
+      closeAddEditDialogHandler();
+      showLoader(true);
+      const response = await fetch("http://localhost:3000/api/indent/save", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          date,
+          data: { ...rowData, items: indent },
+          type,
+        }),
+      });
+      const result = await response.json();
+      showLoader(false);
+      if (result.success) {
+        showMessage("success", result.message);
+        getIndentData(date);
+      } else {
+        showMessage("error", result.message);
+      }
     } else {
-      showMessage("error", result.message);
+      showMessage("info", "Indent Not entered");
     }
   };
   return (
@@ -151,18 +198,21 @@ function Indent() {
           <ViewIndent data={viewData} />
         </Modal>
       )}
-      {showAddDialog && (
+      {showAddEditDialog && (
         <IndentDialog
           dialogData={{
             title: `${rowData.customerName}'s Indent`,
             desc: "",
             okButtonTitle: "OK",
+            date: date,
           }}
-          open={showAddDialog}
+          open={showAddEditDialog}
         >
           <NewIndent
+            key={rowData.id}
             saveButtonHandler={saveButtonHandler}
-            closeDialogHandler={addDialogHandler}
+            closeDialogHandler={closeAddEditDialogHandler}
+            customerIndent={customerIndent}
           />
         </IndentDialog>
       )}
@@ -180,7 +230,8 @@ function Indent() {
                 row,
                 deleteDialogHandler,
                 viewDialogHandler,
-                addDialogHandler,
+                addIndentButtonHandler,
+                editDialogHandler,
               )
             }
             filter={{

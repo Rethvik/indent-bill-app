@@ -2,54 +2,31 @@ import APP_CONSTANT from "@/consts/appConstants";
 import getSheetData from "../../utils/getSheetData";
 import writeSheetData from "../../utils/writeSheetData";
 import logger from "../../utils/log";
-// data {
-//   id: 1,
-//   customerName: 'Vanapalli 3',
-//   status: 'Not Ordered',
-//   contact: '1234567890',
-//   items: { FCM: '12' }
-// }
-// [
-//   {
-//     id: 1,
-//     customerName: "Vanapalli 3",
-//     status: "Not Ordered",
-//     contact: "1234567890",
-//   },
-//   {
-//     id: 2,
-//     customerName: "Siva",
-//     status: "Not Ordered",
-//     contact: "123456678",
-//   },
-//   {
-//     id: 3,
-//     customerName: "Yenugu Mahal 2",
-//     status: "Not Ordered",
-//     contact: "9878748392",
-//   },
-//   {
-//     id: 4,
-//     customerName: "Kattunga Srinu",
-//     status: "Not Ordered",
-//     contact: "989880988",
-//   },
-//   {
-//     id: 5,
-//     customerName: "D Suri",
-//     status: "Not Ordered",
-//     contact: "7878980988",
-//   },
-// ];
-const saveIndent = async (indentFilePath, data) => {
+import generatePayload from "../utils/generateSwipeInvoicePayload";
+
+const saveIndent = async (indentFilePath, data, type, date) => {
   try {
     const indentSummary = await getSheetData(indentFilePath, "INDENT");
     const totalOrderSummary = await getSheetData(indentFilePath, "ORDER");
     if (indentSummary.success) {
       if (totalOrderSummary.success) {
         let orderData = totalOrderSummary.data;
-        orderData = orderData.filter((order) => order.id != data.id);
+        orderData = orderData.filter(
+          (order) => Number(order.id) !== Number(data.id),
+        );
+
+        // Check whether the request came from New indent or edit indent
+        // if (type === "edit") {
+        //   let prevIndent = totalOrderSummary.data.filter(
+        //     (order) => Number(order.id) === Number(data.id),
+        //   )[0];
+        //   delete prevIndent["id"];
+        //   delete prevIndent["__rowNum__"];
+        // }
+        const invoicePayload = await generatePayload(data.id, data.items, date);
         orderData = [...orderData, { id: data.id, ...data.items }];
+
+        // Here we need to call Swipe API to create invoice, returning those data must be stored in excel
         const result = await writeSheetData(indentFilePath, "ORDER", orderData);
         if (result.success) {
           let customersStatusData = indentSummary.data;
@@ -64,7 +41,7 @@ const saveIndent = async (indentFilePath, data) => {
           const indentResult = await writeSheetData(
             indentFilePath,
             "INDENT",
-            customersStatusData
+            customersStatusData,
           );
           return indentResult;
         }

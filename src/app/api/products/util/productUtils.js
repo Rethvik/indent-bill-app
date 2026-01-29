@@ -153,11 +153,13 @@ const productSWIPEAPI = async () => {
         basePrice: product.unit_price,
         priceWithTax: product.price_with_tax,
         taxRate: product.tax_rate,
-        description: product.description,
+        description: product.description.replace(/<[^>]*>/g, "").split(" ")[1],
+        order: product.description.replace(/<[^>]*>/g, "").split(" ")[0],
         hsnCode: product.hsn_code,
         unit: product.unit,
         swipeId: product.swipe_id,
         discountPercent: product.discount_percent,
+        category: product.category,
       };
     });
     return {
@@ -254,11 +256,31 @@ const getProducts = async () => {
       } else {
         const workbook = XLSX.readFile(productsFilePath);
         const worksheet = workbook.Sheets["PRODUCTS"];
-        const existingData = XLSX.utils.sheet_to_json(worksheet);
+        let existingData = XLSX.utils.sheet_to_json(worksheet);
+
+        // Grouping products based on category
+        const categoryGroupedProducts = Object.groupBy(
+          existingData,
+          ({ category }) => category,
+        );
+        let productsSorted = [];
+
+        // Sorting based on groups and sorting inside groups based on the id
+        const config = SERVER_CONSTANTS.PRODUCT_ORDER_CONFIG;
+        for (let i = 0; i < config.length; i++) {
+          if (
+            categoryGroupedProducts[config[i]] &&
+            categoryGroupedProducts[config[i]].length > 0
+          ) {
+            let result = categoryGroupedProducts[config[i]];
+            result.sort((a, b) => Number(a.order) - Number(b.order));
+            productsSorted = [...productsSorted, ...result];
+          }
+        }
         return {
           success: true,
           message: "Products Fetched Successfully",
-          products: existingData,
+          products: productsSorted,
           showMessage: true,
         };
       }
