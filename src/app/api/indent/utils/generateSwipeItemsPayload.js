@@ -1,9 +1,11 @@
 import SERVER_CONSTANTS from "../../constants/apiConstant";
 import getSheetData from "../../utils/getSheetData";
 import logger from "../../utils/log";
+import generateItemsPrice from "./generateItemsPrice";
 
 const generateItemsPayload = async (customerId, indent) => {
   try {
+    let itemsPayload = [];
     // Get Pricelists information
     const result = await getSheetData(
       `${SERVER_CONSTANTS.CUSTOMER_FILE_PATH}/customers.xlsx`,
@@ -24,45 +26,36 @@ const generateItemsPayload = async (customerId, indent) => {
       );
       if (productsResult.success) {
         const productsData = productsResult.data;
-        let productsIds = [];
 
         // Create new product object by filtering from product data by indent
         const productsWithIds = Object.keys(indent).map((item) => {
           const productDetail = productsData.filter(
             (product) => product.name === item,
           )[0];
-          productsIds.push(Number(productDetail.id));
           return {
             id: productDetail.id,
             name: productDetail.name,
             unit: productDetail.unit,
             quantity: Number(indent[item]),
+            offer: productDetail.offer,
           };
         });
-
-        // Read Item Prices sheet
-        const pricesOfProductsResult = await getSheetData(
-          `${SERVER_CONSTANTS.PRODUCTS_FILE_PATH}/products.xlsx`,
-          "ITEM_PRICES",
-        );
-        if (pricesOfProductsResult.success) {
-          console.log(productsIds);
-          const pricesOfProducts = pricesOfProductsResult.data;
-
-          //   Get prices of indent placed products
-          const pricesOfPriceList = pricesOfProducts.filter(
-            (item) =>
-              item.pricelist_id === priceListOfCustomer.pricelist_id &&
-              productsIds.includes(Number(item.product_id)),
+        for (let i = 0; i < productsWithIds.length; i++) {
+          const result = await generateItemsPrice(
+            customerId,
+            productsWithIds[i],
+            priceListOfCustomer,
           );
-          console.log(productsWithIds);
-          console.log(pricesOfPriceList);
-        } else {
-          return pricesOfProductsResult;
+          if (result.success) {
+            itemsPayload = [...itemsPayload, result.data];
+          } else {
+            return result;
+          }
         }
       } else {
         return productsResult;
       }
+      return { success: true, data: itemsPayload };
     } else {
       return result;
     }

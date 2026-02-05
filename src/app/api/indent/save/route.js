@@ -11,14 +11,7 @@ export async function PUT(req) {
     if (result.success) {
       return NextResponse.json({ success: true, message: "Indent Saved" });
     } else {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Something went wrong",
-          error: result.message,
-        },
-        { status: 500 },
-      );
+      return NextResponse.json(result, { status: 500 });
     }
   } catch (err) {
     console.log(err);

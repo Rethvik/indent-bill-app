@@ -50,48 +50,42 @@ const getListOfProducts = async () => {
 };
 
 const createInvoice = async (data) => {
-  const options = {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${bearerToken}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      document_type: data.documentType,
-      document_date: data.documentDate,
-      party: {
-        id: data.customerID,
-        type: "customer",
-        name: data.customerName,
-        phone_number: data.customerPhone,
-        gstin: data.gstIn,
+  try {
+    const options = {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${bearerToken}`,
+        "Content-Type": "application/json",
       },
-      notes: "Notes for the document",
-      terms: "Terms and Conditions",
-      items: [
-        ...data.items,
-        {
-          id: "ITEM123455667ghg",
-          name: "Item Namgergggree",
-          quantity: 1,
-          unit_price: 200,
-          tax_rate: 18,
-          price_with_tax: 236,
-          net_amount: 200,
-          total_amount: 236,
-          hsn_code: "1234",
-          item_type: "Product",
-          unit: "kg",
-          category: "Electronics",
+      body: JSON.stringify({
+        document_type: data.documentType,
+        document_date: data.documentDate,
+        serial_number_v2: {
+          prefix: `SAITEJA/${data.documentDate.split("-")[2]}/`,
         },
-      ],
-    }),
-  };
+        party: {
+          id: data.party.id,
+          type: "customer",
+          name: data.party.name,
+          phone_number: data.phone_number,
+          gstin: data.party.gstin,
+        },
+        terms:
+          "Products need to checked at vehicle only. After vehicle left any damages are not our responsible",
+        items: [...data.items],
+      }),
+    };
 
-  fetch("https://app.getswipe.in/api/partner/v2/doc", options)
-    .then((res) => res.json())
-    .then((res) => console.log(res))
-    .catch((err) => console.error(err));
+    const response = await fetch(
+      "https://app.getswipe.in/api/partner/v2/doc",
+      options,
+    );
+    const result = await response.json();
+    return result;
+  } catch (err) {
+    logger("error", err.message);
+    return { success: false, error: err, message: err.message };
+  }
 };
 
-export { getListOfCustomers, getListOfProducts };
+export { getListOfCustomers, getListOfProducts, createInvoice };

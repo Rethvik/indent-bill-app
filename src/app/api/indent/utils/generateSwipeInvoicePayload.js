@@ -31,12 +31,16 @@ const generatePayload = async (customerId, indent, selectedDate) => {
           gstin: customer.gstin,
         },
       };
-      //   console.log(payload);
       const itemsPayload = await generateItemsPayload(customerId, indent);
+      if (itemsPayload.success) {
+        payload.items = itemsPayload.data;
+      } else {
+        return itemsPayload;
+      }
     } else {
       return { success: false, message: customersResult.message };
     }
-    return;
+    return { success: true, payload };
   } catch (err) {
     logger("error", err.message);
     console.log(err);
