@@ -20,7 +20,7 @@ function Indent() {
   const [rowData, setRowData] = useState({});
   const [indent, setIndent] = useState([]);
   const [viewData, setViewData] = useState([]);
-  const [customerIndent, setCustomerIndent] = useState({});
+  const [customerIndent, setCustomerIndent] = useState([]);
   const [type, setType] = useState("");
   const loader = useShowLoader((state) => state.loader);
   const showLoader = useShowLoader((state) => state.showLoader);
@@ -108,15 +108,7 @@ function Indent() {
     setType("edit");
     const result = await getIndentOfCustomer(row.id, date);
     if (result.success) {
-      let indentOfCustomer = {};
-      const data = result.data;
-      for (let i = 0; i < data.length; i++) {
-        indentOfCustomer = {
-          ...indentOfCustomer,
-          [data[i].product]: data[i].quantity,
-        };
-      }
-      setCustomerIndent(indentOfCustomer);
+      setCustomerIndent(result.data);
       setShowAddEditDialog(true);
     } else {
       showMessage("error", result.message);
@@ -129,7 +121,7 @@ function Indent() {
   };
   const closeAddEditDialogHandler = () => {
     setShowAddEditDialog(false);
-    setCustomerIndent({});
+    setCustomerIndent([]);
     setType("");
   };
   const addIndentButtonHandler = (row) => {
@@ -142,6 +134,7 @@ function Indent() {
 
   // To save the newly added or edited indent
   const saveButtonHandler = async (indent) => {
+    console.log(indent);
     if (Object.keys(indent).length > 0) {
       closeAddEditDialogHandler();
       showLoader(true);
@@ -152,7 +145,7 @@ function Indent() {
         },
         body: JSON.stringify({
           date,
-          data: { ...rowData, items: indent },
+          orderInfo: { ...rowData, items: indent },
           type,
         }),
       });
@@ -217,8 +210,9 @@ function Indent() {
         </IndentDialog>
       )}
       <main>
-        <div className="my-2 px-4 py-2 bg-secondary rounded-md">
+        <div className="my-2 px-4 py-2 bg-secondary rounded-md flex justify-between">
           <h1 className="font-semibold">Indent</h1>
+          <h1 className="font-semibold">{date}</h1>
         </div>
         <section>
           <DataTable

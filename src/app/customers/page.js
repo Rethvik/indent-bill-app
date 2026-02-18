@@ -23,7 +23,7 @@ function Customers() {
       const result = await response.json();
       showLoader(false);
       if (result.success) {
-        setCustomers(result.customers);
+        setCustomers(result.data);
         if (result.showMessage) {
           showMessage("success", result.message);
         }

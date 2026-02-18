@@ -1,5 +1,5 @@
 const { NextResponse } = require("next/server");
-const { getProducts } = require("./util/productUtils");
+import getProducts from "./util/productUtils";
 
 export const GET = async () => {
   try {

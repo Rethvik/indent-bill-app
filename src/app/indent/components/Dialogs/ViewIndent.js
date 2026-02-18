@@ -78,12 +78,25 @@ import React from "react";
 //   },
 // ];
 const tableHeaders = [
-  { accessorKey: "product", title: "Product Name" },
+  { accessorKey: "name", title: "Product Name" },
   { accessorKey: "quantity", title: "Quantity" },
+  { accessorKey: "unit", title: "Unit" },
+  { accessorKey: "total_amount", title: "Amount" },
 ];
 
 function ViewIndent({ data }) {
-  return <PlainTable data={data} tableHeaders={tableHeaders} />;
+  const totalAmount = data.reduce((acc, current) => {
+    return acc + current.total_amount;
+  }, 0);
+  return (
+    <>
+      <PlainTable
+        data={data}
+        tableHeaders={tableHeaders}
+        totalAmount={totalAmount}
+      />
+    </>
+  );
 }
 
 export default ViewIndent;

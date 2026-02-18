@@ -103,10 +103,12 @@ export default React.memo(function DatePicker({ label, getDateValue }) {
               onMonthChange={setMonth}
               endMonth={new Date("2030-12-31")}
               onSelect={(date) => {
-                fetchDone.current = false;
-                getDateValue(formatDate(date));
-                setDateValue(date);
-                setValue(formatDate(date));
+                if (date) {
+                  fetchDone.current = false;
+                  getDateValue(formatDate(date));
+                  setDateValue(date);
+                  setValue(formatDate(date));
+                }
                 setOpen(false);
               }}
             />

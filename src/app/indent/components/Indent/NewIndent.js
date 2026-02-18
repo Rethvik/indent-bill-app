@@ -17,29 +17,41 @@ function NewIndent({ saveButtonHandler, closeDialogHandler, customerIndent }) {
   const [searchValue, setSearchValue] = useState("");
   const [data, setData] = useState([]);
   const [currentList, setCurrentList] = useState([]);
-  const [indent, setIndent] = useState(customerIndent || {});
+  const [indent, setIndent] = useState(customerIndent || []);
   const inputrefs = useRef(
     Array.from({ length: currentList.length }, () => React.createRef()),
   );
-  // useEffect(() => {
-  //   setIndent(customerIndent || {});
-  // }, [customerIndent]);
+
   const filterSearchHandler = (e) => {
     setSearchValue(e.target.value);
     const filteredData = data.filter((item) =>
-      item.toLowerCase().includes(e.target.value.toLowerCase()),
+      item.name.toLowerCase().includes(e.target.value.toLowerCase()),
     );
     setCurrentList(filteredData);
   };
-  const quantityChangeHandler = (e) => {
-    const updatedIndent = { ...indent };
+
+  const quantityChangeHandler = (e, item) => {
+    let updatedIndent = [...indent];
+    const regex = /^\d*$/;
     if (e.target.value !== "" && Number(e.target.value) === 0) {
       return;
     }
     if (e.target.value) {
-      updatedIndent[e.target.name] = Number(e.target.value);
+      if (updatedIndent.length > 0) {
+        updatedIndent = updatedIndent.filter(
+          (product) => product.product_id !== item.product_id,
+        );
+        updatedIndent = [
+          ...updatedIndent,
+          { ...item, quantity: Number(e.target.value) },
+        ];
+      } else {
+        updatedIndent = [{ ...item, quantity: Number(e.target.value) }];
+      }
     } else {
-      delete updatedIndent[e.target.name];
+      updatedIndent = updatedIndent.filter(
+        (product) => product.product_id !== item.product_id,
+      );
     }
     setIndent(updatedIndent);
   };
@@ -64,8 +76,10 @@ function NewIndent({ saveButtonHandler, closeDialogHandler, customerIndent }) {
       }
     }
   };
+
   const showLoader = useShowLoader((state) => state.showLoader);
   const showMessage = useShowMessage((state) => state.showMessage);
+
   useEffect(() => {
     if (fetchDone.current) {
       return;
@@ -77,18 +91,19 @@ function NewIndent({ saveButtonHandler, closeDialogHandler, customerIndent }) {
       const result = await response.json();
       showLoader(false);
       if (result.success) {
-        let productNames = result.products
-          .filter((product) => product.description === "true")
-          .map((item) => item.name);
-        let customerProducts = [];
-        if (Object.keys(customerIndent).length > 0) {
-          customerProducts = Object.keys(customerIndent);
-          productNames = productNames.filter(
-            (product) => !customerProducts.includes(product),
-          );
-        }
-        setData([...customerProducts, ...productNames]);
-        setCurrentList([...customerProducts, ...productNames]);
+        const customerIndentProductIds = new Set(
+          customerIndent.map((item) => item.product_id),
+        );
+        let products = result.data.filter((product) => product.active);
+        products = products.map((item) => {
+          return { ...item, quantity: "" };
+        });
+        products = products.filter(
+          (item) => !customerIndentProductIds.has(item.product_id),
+        );
+        products = [...customerIndent, ...products];
+        setData([...products]);
+        setCurrentList([...products]);
       } else {
         showMessage("error", result.message);
       }
@@ -96,6 +111,7 @@ function NewIndent({ saveButtonHandler, closeDialogHandler, customerIndent }) {
 
     fetchProducts();
   }, [showLoader, showMessage, customerIndent]);
+
   return (
     <>
       <div>
@@ -116,22 +132,31 @@ function NewIndent({ saveButtonHandler, closeDialogHandler, customerIndent }) {
           <FieldSet className="pr-4 pl-2 py-1 pb-5">
             <FieldGroup>
               <Field>
-                {currentList.map((item, index) => (
-                  <div key={item} className="flex justify-between">
-                    <FieldLabel htmlFor={item.id}>{item}</FieldLabel>
-                    <Input
-                      ref={(el) => (inputrefs.current[index] = el)}
-                      onKeyDown={(e) => onKeyDownHandler(e, index)}
-                      value={indent[item] || ""}
-                      onChange={quantityChangeHandler}
-                      name={item}
-                      onWheel={(event) => event.currentTarget.blur()}
-                      className="w-50 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                      id={item}
-                      type="number"
-                    />
-                  </div>
-                ))}
+                {currentList.map((item, index) => {
+                  const orderedItem = indent.find(
+                    (orderItem) => orderItem.product_id === item.product_id,
+                  );
+                  return (
+                    <div key={item.product_id} className="flex justify-between">
+                      <FieldLabel htmlFor={item.product_id}>
+                        {item.name}
+                      </FieldLabel>
+                      <Input
+                        ref={(el) => (inputrefs.current[index] = el)}
+                        onKeyDown={(e) => onKeyDownHandler(e, index)}
+                        value={orderedItem?.quantity || ""}
+                        onChange={(e) => quantityChangeHandler(e, item)}
+                        name={item}
+                        onWheel={(event) => event.currentTarget.blur()}
+                        className="w-50 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                        id={item.product_id}
+                        type="text"
+                        inputMode="numeric"
+                        autoComplete="off"
+                      />
+                    </div>
+                  );
+                })}
               </Field>
             </FieldGroup>
           </FieldSet>

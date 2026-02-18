@@ -1,101 +1,51 @@
-import { checkFile } from "../../utils/checkFile";
-import { getCustomers } from "../../customers/loadCustomers";
-import indentLedger from "./indent";
-import getDateFilePath from "../../utils/getDateFilePath";
-import getSheetData from "../../utils/getSheetData";
-import * as XLSX from "xlsx";
-import writeSheetData from "../../utils/writeSheetData";
-
+import getCustomers from "../../customers/getCustomers";
+import logger from "../../utils/log";
+import convertDateToDB from "../../utils/convertDate";
+import { select } from "../../supabase/supabase";
 const getIndent = async (indentDate) => {
   try {
-    const result = await checkFile();
-    // Fetch Customers
-    if (result.success) {
-      const customersResult = await getCustomers();
-      // console.log(customersResult);
-      if (customersResult.success) {
-        // Get filePath and respective data
-        const indentFilePath = getDateFilePath(indentDate);
-        const result = await getSheetData(indentFilePath, "INDENT");
-        if (result.success) {
-          /*
-            1. If Indent present, then we need to compare the customers we fetched and customers from indent file.
-            2. If new Customer is present we need to add that customer into the indent file.
-          */
-          if (result.data.length > 0) {
-            /* 
-              Here we need to check the customers present in excel and file and data got from getCustomers
-              If customer count is different we need to add new customer and make status indent placed to False
-            */
-            const existingCustomers = result.data.map(
-              (customer) => customer.id,
-            );
-            const newCustomers = customersResult.customers
-              .filter(
-                (customer) => !existingCustomers.includes(customer.customer_id),
-              )
-              .map((customer) => {
-                return {
-                  id: customer.customer_id,
-                  customerName: customer.name,
-                  status: "Not Ordered",
-                  contact: customer.phone,
-                };
-              });
-            if (newCustomers.length > 0) {
-              const writeResult = await writeSheetData(
-                indentFilePath,
-                "INDENT",
-                [...result.data, ...newCustomers],
-              );
-              if (writeResult.success) {
-                return {
-                  success: true,
-                  message: "Indent fetched successfully",
-                  indent: [...result.data, ...newCustomers],
-                };
-              } else {
-                return writeResult;
-              }
-            } else {
-              return {
-                success: true,
-                message: "Indent fetched successfully",
-                indent: result.data,
-              };
-            }
-          } else {
-            // Here we need to load the customers into indent file
-            const data = customersResult.customers.map((customer) => {
-              return {
-                id: customer.customer_id,
-                customerName: customer.name,
-                status: "Not Ordered",
-                contact: customer.phone,
-              };
-            });
-            const workbook = result.workbook;
-            const newWorksheet = XLSX.utils.json_to_sheet(data);
-            workbook.Sheets["INDENT"] = newWorksheet;
-            await XLSX.writeFile(workbook, indentFilePath);
-            return {
-              success: true,
-              message: "Indent created successfully",
-              indent: data,
-            };
-          }
-        } else {
-          return result;
-        }
-      } else {
-        return customersResult;
+    const customersResult = await getCustomers();
+    const formattedDate = convertDateToDB(indentDate);
+    if (customersResult.success) {
+      const result = await select("orders", "customer_id", [
+        { operator: "eq", columnName: "order_date", value: formattedDate },
+      ]);
+
+      // If the result is not success
+      if (!result.success) {
+        return { ...result, showMessage: true };
       }
+
+      // Converting customer who order into Ordered status and not ordered into Not Ordered
+      const orderedCustomers = result.data.map((item) => item.customer_id);
+      const statusOfCustomers = customersResult.data.map((customer) => {
+        if (orderedCustomers.includes(customer.customer_id)) {
+          return {
+            id: customer.customer_id,
+            customerName: customer.name,
+            status: "Ordered",
+            contact: customer.phone,
+          };
+        } else {
+          return {
+            id: customer.customer_id,
+            customerName: customer.name,
+            status: "Not Ordered",
+            contact: customer.phone,
+          };
+        }
+      });
+      return {
+        success: true,
+        indent: statusOfCustomers,
+        message: "Indent Fetched",
+      };
     } else {
-      return result;
+      return customersResult;
     }
   } catch (err) {
-    console.log(err);
-    return { success: false, err, message: err.message };
+    logger("error", `Error in getIndent file ${err.message}`);
+    return { success: false, message: err.message };
   }
 };
 export default getIndent;

@@ -6,7 +6,7 @@ const { Badge } = require("@/components/ui/badge");
 
 const columns = [
   {
-    accessorKey: "id",
+    accessorKey: "product_id",
     header: "ID",
   },
   {

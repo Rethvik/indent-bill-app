@@ -20,7 +20,7 @@ function Inventory() {
       const result = await response.json();
       showLoader(false);
       if (result.success) {
-        setProducts(result.products);
+        setProducts(result.data);
         showMessage("success", result.message);
       } else {
         showMessage("error", result.message);

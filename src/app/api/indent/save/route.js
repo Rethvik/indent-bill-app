@@ -5,9 +5,8 @@ import saveIndent from "./saveIndent";
 export async function PUT(req) {
   try {
     const body = await req.json();
-    let { date, data, type } = body;
-    const indentFilePath = getDateFilePath(date);
-    const result = await saveIndent(indentFilePath, data, type, date);
+    let { date, orderInfo, type } = body;
+    const result = await saveIndent(orderInfo, type, date);
     if (result.success) {
       return NextResponse.json({ success: true, message: "Indent Saved" });
     } else {

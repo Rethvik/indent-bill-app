@@ -1,14 +1,14 @@
 import { NextResponse } from "next/server";
-import getDateFilePath from "../../utils/getDateFilePath";
 import deleteIndent from "./deleteIndent";
+import convertDateToDB from "../../utils/convertDate";
 
 export async function DELETE(req) {
   try {
     const { searchParams } = new URL(req.url);
     const id = searchParams.get("id");
     const date = searchParams.get("date");
-    const indentFilePath = getDateFilePath(date);
-    const result = await deleteIndent(indentFilePath, id);
+    const formattedDate = convertDateToDB(date);
+    const result = await deleteIndent(id, formattedDate);
     return NextResponse.json(result);
   } catch (err) {
     console.log(err);

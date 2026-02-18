@@ -3,19 +3,22 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
 
-function PlainTable({ data, tableHeaders }) {
+function PlainTable({ data, tableHeaders, totalAmount }) {
   return (
     <ScrollArea className="h-110">
       <Table>
         <TableHeader className="sticky top-0 z-10 bg-white">
           <TableRow>
             {tableHeaders.map((item, index) => (
-              <TableHead key={index}>{item.title}</TableHead>
+              <TableHead className="border border-border" key={index}>
+                {item.title}
+              </TableHead>
             ))}
           </TableRow>
         </TableHeader>
@@ -25,7 +28,7 @@ function PlainTable({ data, tableHeaders }) {
               <TableRow key={index}>
                 {tableHeaders.map((col, index) => {
                   return (
-                    <TableCell key={col.accessorKey}>
+                    <TableCell className="border border-border" key={index}>
                       {item[col.accessorKey]}
                     </TableCell>
                   );
@@ -33,14 +36,19 @@ function PlainTable({ data, tableHeaders }) {
               </TableRow>
             );
           })}
-          {/* {data.map((item) => (
-            <TableRow key={item.product}>
-              <TableCell>{item.product}</TableCell>
-              <TableCell>{item.quantity}</TableCell>
-              <TableCell>{item.unit}</TableCell>
-            </TableRow>
-          ))} */}
         </TableBody>
+        {totalAmount && (
+          <TableFooter>
+            <TableRow>
+              <TableCell className="border border-border" colSpan={3}>
+                Total Amount
+              </TableCell>
+              <TableCell className="border border-border">
+                {totalAmount}
+              </TableCell>
+            </TableRow>
+          </TableFooter>
+        )}
       </Table>
     </ScrollArea>
   );
