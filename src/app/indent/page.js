@@ -134,7 +134,6 @@ function Indent() {
 
   // To save the newly added or edited indent
   const saveButtonHandler = async (indent) => {
-    console.log(indent);
     if (Object.keys(indent).length > 0) {
       closeAddEditDialogHandler();
       showLoader(true);
@@ -211,8 +210,7 @@ function Indent() {
       )}
       <main>
         <div className="my-2 px-4 py-2 bg-secondary rounded-md flex justify-between">
-          <h1 className="font-semibold">Indent</h1>
-          <h1 className="font-semibold">{date}</h1>
+          <h1 className="font-semibold">Indent : {date}</h1>
         </div>
         <section>
           <DataTable

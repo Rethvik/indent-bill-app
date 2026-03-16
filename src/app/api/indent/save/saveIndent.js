@@ -1,30 +1,12 @@
 import convertDateToDB from "../../utils/convertDate";
 import logger from "../../utils/log";
 import createOrder from "./utils/createOrder";
-import getPriceList from "./utils/getPriceList";
-import getProductPrices from "./utils/getProductPrices";
-import checkOfferAndUpdatePrice from "./utils/checkOfferAndUpdatePrice";
 import generateOrderItems from "./utils/generateOrderItems";
 import getCustomerIndentToView from "../get/utils/getCustomerIndentToView";
 import getPrices from "./getPrices";
-import { insert } from "../../supabase/supabase";
-/***
- Invoice response
- {
-  success: true,
-  message: 'Invoice created',
-  error_code: '',
-  errors: [],
-  data: {
-    hash_id: 'SLQX8Q2tv2glv',
-    serial_number: 'INV-2',
-    irn: '',
-    qr_code: ''
-  },
-  request_id: '67de790e-c431-424e-9038-d97788e7cf2d',
-  timestamp: '2026-01-30 17:12:06.330109'
-}
- */
+import { insert, remove } from "../../supabase/supabase";
+import updateIndent from "./utils/updateIndent";
+
 const saveIndent = async (orderInfo, type, date) => {
   try {
     const formattedDate = convertDateToDB(date);
@@ -56,6 +38,7 @@ const saveIndent = async (orderInfo, type, date) => {
             orderInfo.items,
             orderNumber,
             prices,
+            type,
           );
           if (orderItemsResult.success) {
             // Insert order items into table
@@ -84,7 +67,6 @@ const saveIndent = async (orderInfo, type, date) => {
         date,
         orderInfo.id,
       );
-
       if (existingOrderItemsResult.success) {
         const existingOrderItems = existingOrderItemsResult.data;
 
@@ -110,57 +92,57 @@ const saveIndent = async (orderInfo, type, date) => {
           return existing && existing.quantity !== item.quantity;
         });
 
-        if (updatedItems.length > 0) {
-          // Get pricelist of the customer
-          const priceListResult = await getPriceList(orderInfo.id);
-
-          if (priceListResult.success) {
-            const priceList = priceListResult.priceList;
-
-            // Get all product ids
-            const productIDS = orderInfo.items.map((product) =>
-              Number(product.product_id),
+        // If any items are newly added then we are inserting into order_items
+        if (addedItems.length > 0) {
+          const pricesResult = await getPrices(orderInfo.id, addedItems);
+          if (pricesResult.success) {
+            prices = pricesResult.prices;
+            const orderItemsResult = await generateOrderItems(
+              addedItems,
+              existingOrderItemsResult.data[0].order_number,
+              prices,
+              "new",
             );
-
-            // Get product prices
-            const productPriceResult = await getProductPrices(
-              productIDS,
-              priceList,
-            );
-            if (productPriceResult.success) {
-              prices = productPriceResult.prices;
-
-              // Check for offers and update prices if offers are applicable
-              const updatedPriceswithOffer = await checkOfferAndUpdatePrice(
-                orderInfo.items,
-                prices,
-              );
-              if (updatedPriceswithOffer.success) {
-                prices = updatedPriceswithOffer.prices;
-
-                // Generate order items into order_items table
-                const result = await generateOrderItems(
-                  orderInfo.items,
-                  orderNumber,
-                  prices,
-                );
+            if (orderItemsResult.success) {
+              const result = await insert("order_items", orderItemsResult.data);
+              if (!result.success) {
                 return result;
-              } else {
-                return updatedPriceswithOffer;
               }
-            } else {
-              return productPriceResult;
             }
+          } else {
+            return orderItemsResult;
           }
-        } else {
-          return priceListResult;
         }
+
+        // If any items are updated
+        if (updatedItems.length > 0) {
+          const updatedItemsResult = await updateIndent(
+            orderInfo.id,
+            updatedItems,
+          );
+          if (!updatedItemsResult.success) {
+            return updatedItemsResult;
+          }
+        }
+
+        // If any items are removed
+        if (removedItems.length > 0) {
+          const removedIds = removedItems.map((item) => item.id);
+          const deletedItemsResult = await remove("order_items", [
+            { operator: "in", columnName: "id", value: removedIds },
+          ]);
+          if (!deletedItemsResult.success) {
+            return deletedItemsResult;
+          }
+        }
+        return { success: true, message: "Indent modified successfully" };
       } else {
         return existingOrderItemsResult;
       }
     }
   } catch (e) {
-    logger("error", e);
+    logger("error", `Error in save indent file ${e.message}`);
+    return { success: false, message: e.message };
   }
 };
 export default saveIndent;

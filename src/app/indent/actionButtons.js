@@ -17,21 +17,23 @@ const actionButtons = (
     <div className="flex">
       {row.status === APP_CONSTANT.ORDERED ? (
         <div className="flex">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                className="mr-3"
-                variant="purple"
-                size="icon-xsm"
-                onClick={() => editDialogHandler(row)}
-              >
-                <Pencil />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Edit Indent</p>
-            </TooltipContent>
-          </Tooltip>
+          {row.allowWriteIndent && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  className="mr-3"
+                  variant="purple"
+                  size="icon-xsm"
+                  onClick={() => editDialogHandler(row)}
+                >
+                  <Pencil />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Edit Indent</p>
+              </TooltipContent>
+            </Tooltip>
+          )}
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
@@ -47,39 +49,43 @@ const actionButtons = (
               <p>View Indent</p>
             </TooltipContent>
           </Tooltip>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                onClick={() => deleteHandler(row)}
-                variant="destructive"
-                size="icon-xsm"
-              >
-                {" "}
-                <Trash />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Delete Indent</p>
-            </TooltipContent>
-          </Tooltip>
+          {row.allowWriteIndent && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  onClick={() => deleteHandler(row)}
+                  variant="destructive"
+                  size="icon-xsm"
+                >
+                  {" "}
+                  <Trash />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Delete Indent</p>
+              </TooltipContent>
+            </Tooltip>
+          )}
         </div>
       ) : (
         <div>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                onClick={() => sheetHandler(row)}
-                className="mr-3"
-                variant="secondary"
-                size="icon-xsm"
-              >
-                <Plus />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Add Indent</p>
-            </TooltipContent>
-          </Tooltip>
+          {row.allowWriteIndent && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  onClick={() => sheetHandler(row)}
+                  className="mr-3"
+                  variant="secondary"
+                  size="icon-xsm"
+                >
+                  <Plus />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Add Indent</p>
+              </TooltipContent>
+            </Tooltip>
+          )}
         </div>
       )}
     </div>

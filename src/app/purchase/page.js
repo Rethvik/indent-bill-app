@@ -1,22 +1,55 @@
 "use client";
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
-import DatePicker from "@/components/reusable/DatePicker";
-import React from "react";
-
+import React, { useEffect, useRef, useState } from "react";
+import DataTable from "@/components/reusable/DataTable/DataTable";
+import columns from "@/app/inventory/data/columns";
+import { useShowLoader, useShowMessage } from "@/store/store";
 function Purchase() {
+  const fetchDone = useRef(false);
+  const [products, setProducts] = useState([]);
+  const showLoader = useShowLoader((state) => state.showLoader);
+  const showMessage = useShowMessage((state) => state.showMessage);
+  useEffect(() => {
+    if (fetchDone.current) {
+      return;
+    }
+    fetchDone.current = true;
+    const fetchProducts = async () => {
+      showLoader(true);
+      const response = await fetch("http://localhost:3000/api/products");
+      const result = await response.json();
+      showLoader(false);
+      if (result.success) {
+        setProducts(result.data);
+        showMessage("success", result.message);
+      } else {
+        showMessage("error", result.message);
+      }
+    };
+
+    fetchProducts();
+  }, [showLoader, showMessage]);
   const getDateValue = (value) => {
     console.log(value);
   };
   return (
-    <section className="my-4 px-2 w-full flex flex-row justify-between">
-      <DatePicker label="" getDateValue={getDateValue} />
-      <Button variant="green">
-        {" "}
-        <Plus />
-        Create Purchase
-      </Button>
-    </section>
+    <main>
+      <section>
+        <div className="my-2 px-4 py-2 bg-secondary rounded-md">
+          <h1 className="font-semibold">Purchase</h1>
+        </div>
+        <DataTable
+          showFooter={true}
+          getDateValue={getDateValue}
+          datePicker={{ show: true }}
+          filter={{
+            searchPlaceholder: "products",
+            filterColumn: "name",
+          }}
+          data={products}
+          columns={columns}
+        />
+      </section>
+    </main>
   );
 }
 

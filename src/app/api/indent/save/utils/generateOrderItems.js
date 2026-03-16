@@ -11,15 +11,28 @@ const generateOrderItems = async (orderItems, order_number, prices, type) => {
         baseAmount * (product.tax_rate / 100),
       ).toFixed(2);
       const total_amount = +parseFloat(baseAmount + taxAmount).toFixed(2);
-      return {
-        order_number: order_number,
-        product_id: product.product_id,
-        name: product.name,
-        quantity: Number(product.quantity),
-        unit_price: prices[String(product.product_id)],
-        tax_rate: product.tax_rate,
-        total_amount: total_amount,
-      };
+      if (type === "new") {
+        return {
+          order_number: order_number,
+          product_id: product.product_id,
+          name: product.name,
+          quantity: Number(product.quantity),
+          unit_price: prices[String(product.product_id)],
+          tax_rate: product.tax_rate,
+          total_amount: total_amount,
+        };
+      } else {
+        return {
+          id: product.id,
+          order_number: order_number,
+          product_id: product.product_id,
+          name: product.name,
+          quantity: Number(product.quantity),
+          unit_price: prices[String(product.product_id)],
+          tax_rate: product.tax_rate,
+          total_amount: total_amount,
+        };
+      }
     });
     return { success: true, data: order_items };
   } catch (e) {

@@ -8,7 +8,7 @@ export async function PUT(req) {
     let { date, orderInfo, type } = body;
     const result = await saveIndent(orderInfo, type, date);
     if (result.success) {
-      return NextResponse.json({ success: true, message: "Indent Saved" });
+      return NextResponse.json({ success: true, message: result.message });
     } else {
       return NextResponse.json(result, { status: 500 });
     }
