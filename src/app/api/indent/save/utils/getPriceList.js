@@ -2,11 +2,9 @@ import logger from "@/app/api/utils/log";
 
 import { select } from "@/app/api/supabase/supabase";
 
-const getPriceList = async (id) => {
+const getPriceList = async (id, tableName, filter) => {
   try {
-    const priceListResult = await select("customers", "price_list", [
-      { operator: "eq", columnName: "customer_id", value: id },
-    ]);
+    const priceListResult = await select(tableName, "price_list", [filter]);
     if (!priceListResult.success) {
       logger(
         "error",

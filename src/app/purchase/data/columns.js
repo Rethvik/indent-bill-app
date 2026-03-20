@@ -1,55 +1,42 @@
 "use client";
-
-import { Box, ShoppingCart, Boxes } from "lucide-react";
-
-const { Badge } = require("@/components/ui/badge");
+import { Badge } from "@/components/ui/badge";
+import APP_CONSTANT from "@/consts/appConstants";
+import { User, CircleStar, Smartphone } from "lucide-react";
 
 const columns = [
   {
-    accessorKey: "product_id",
+    accessorKey: "id",
     header: "ID",
   },
   {
-    accessorKey: "name",
+    accessorKey: "supplierName",
     header: () => (
       <div className="flex items-center">
-        <Box className="mr-1" size={15} />
-        Product
+        <User className="mr-1" size={15} />
+        Supplier
       </div>
     ),
   },
   {
-    accessorKey: "quantity",
+    accessorKey: "status",
     header: () => (
       <div className="flex items-center">
-        <ShoppingCart className="mr-1" size={15} />
-        Stock
+        <CircleStar className="mr-1" size={15} />
+        Status
       </div>
     ),
     cell: ({ row }) => (
-      <Badge
-        variant="orange"
-        className="h-5 min-w-5 ml-5 rounded-full px-1 font-mono tabular-nums"
-      >
-        {row.getValue("quantity")}
-      </Badge>
-    ),
-  },
-  {
-    accessorKey: "unit",
-    header: () => (
-      <div className="flex items-center">
-        <Boxes className="mr-1" size={15} />
-        UOM
+      <div className="flex">
+        <Badge
+          variant={
+            row.getValue("status") === APP_CONSTANT.PURCHASED
+              ? "emerald"
+              : "redoutline"
+          }
+        >
+          {row.getValue("status")}
+        </Badge>
       </div>
-    ),
-    cell: ({ row }) => (
-      <Badge
-        variant="outline"
-        className="h-7 min-w-5 rounded-full px-1 font-mono tabular-nums"
-      >
-        {row.getValue("unit")}
-      </Badge>
     ),
   },
 ];

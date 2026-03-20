@@ -1,21 +1,23 @@
 import { NextResponse } from "next/server";
-import saveIndent from "./saveIndent";
+import savePurchase from "./savePurchase";
+import logger from "../../utils/log";
 
-export async function PUT(req) {
+const PUT = async (req) => {
   try {
     const body = await req.json();
-    let { date, orderInfo, type } = body;
-    const result = await saveIndent(orderInfo, type, date);
+    let { date, purchaseInfo, type } = body;
+    const result = await savePurchase(purchaseInfo, type, date);
     if (result.success) {
       return NextResponse.json({ success: true, message: result.message });
     } else {
       return NextResponse.json(result, { status: 500 });
     }
   } catch (err) {
-    console.log(err);
+    logger("error", `$Error in save purchase route ${err.message}`);
     return NextResponse.json(
       { success: false, message: err.message, error: err },
       { status: 500 },
     );
   }
-}
+};
+export { PUT };

@@ -1,7 +1,7 @@
 import { select } from "@/app/api/supabase/supabase";
 import logger from "@/app/api/utils/log";
 
-const getProductPrices = async (productIDS, priceList) => {
+const getProductPrices = async (productIDS, priceList, tableName) => {
   try {
     const filters = [
       {
@@ -16,7 +16,7 @@ const getProductPrices = async (productIDS, priceList) => {
       },
     ];
     const pricesResult = await select(
-      "price_list",
+      tableName,
       "product_id, unit_price",
       filters,
     );

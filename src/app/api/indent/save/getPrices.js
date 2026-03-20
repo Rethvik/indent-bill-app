@@ -7,7 +7,12 @@ const getPrices = async (customerID, orderItems) => {
   try {
     let prices;
     // Get pricelist of the customer
-    const priceListResult = await getPriceList(customerID);
+    const filter = {
+      operator: "eq",
+      columnName: "customer_id",
+      value: customerID,
+    };
+    const priceListResult = await getPriceList(customerID, "customers", filter);
     if (priceListResult.success) {
       const priceList = priceListResult.priceList;
 
@@ -17,10 +22,13 @@ const getPrices = async (customerID, orderItems) => {
       );
 
       // Get product prices
-      const productPriceResult = await getProductPrices(productIDS, priceList);
+      const productPriceResult = await getProductPrices(
+        productIDS,
+        priceList,
+        "price_list",
+      );
       if (productPriceResult.success) {
         prices = productPriceResult.prices;
-
         // Check for offers and update prices if offers are applicable
         const updatedPriceswithOffer = await checkOfferAndUpdatePrice(
           orderItems,

@@ -19,7 +19,7 @@ const saveIndent = async (orderInfo, type, date) => {
       };
 
       // Sending data to create order in order table
-      const orderCreationResult = await createOrder(order);
+      const orderCreationResult = await createOrder(order, "orders");
       if (orderCreationResult.success) {
         logger(
           "success",
@@ -39,6 +39,7 @@ const saveIndent = async (orderInfo, type, date) => {
             orderNumber,
             prices,
             type,
+            true,
           );
           if (orderItemsResult.success) {
             // Insert order items into table
@@ -119,6 +120,7 @@ const saveIndent = async (orderInfo, type, date) => {
           const updatedItemsResult = await updateIndent(
             orderInfo.id,
             updatedItems,
+            "order_items",
           );
           if (!updatedItemsResult.success) {
             return updatedItemsResult;

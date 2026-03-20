@@ -16,8 +16,12 @@ export function Modal({
   cancelButtonHandler,
 }) {
   return (
-    <Dialog open={open}>
-      <DialogContent className={`${dialogData?.heigWidt}`}>
+    <Dialog open={open} onOpenChange={closeDialogHandler}>
+      <DialogContent
+        className={`${dialogData?.heigWidt}`}
+        onInteractOutside={(e) => e.preventDefault()}
+        onEscapeKeyDown={(e) => e.preventDefault()}
+      >
         <DialogHeader>
           <DialogTitle>{dialogData?.title}</DialogTitle>
           <DialogDescription>{dialogData?.desc}</DialogDescription>

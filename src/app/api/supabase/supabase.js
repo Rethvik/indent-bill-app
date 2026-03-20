@@ -67,7 +67,7 @@ const upsert = async (table, rows) => {
   try {
     const { data, error } = await supabase.from(table).upsert(rows).select();
     if (error) {
-      return { success: false, message: err.message };
+      return { success: false, message: error.message };
     }
     return { success: true, message: "Data updated successfully", data };
   } catch (err) {

@@ -1,6 +1,12 @@
 import logger from "@/app/api/utils/log";
 
-const generateOrderItems = async (orderItems, order_number, prices, type) => {
+const generateOrderItems = async (
+  orderItems,
+  order_number,
+  prices,
+  type,
+  fromIndent,
+) => {
   try {
     // Generating order items as per supabase schema
     const order_items = orderItems.map((product) => {
@@ -13,7 +19,8 @@ const generateOrderItems = async (orderItems, order_number, prices, type) => {
       const total_amount = +parseFloat(baseAmount + taxAmount).toFixed(2);
       if (type === "new") {
         return {
-          order_number: order_number,
+          ...(fromIndent && { order_number: order_number }),
+          ...(!fromIndent && { purchase_id: order_number }),
           product_id: product.product_id,
           name: product.name,
           quantity: Number(product.quantity),
@@ -24,7 +31,8 @@ const generateOrderItems = async (orderItems, order_number, prices, type) => {
       } else {
         return {
           id: product.id,
-          order_number: order_number,
+          ...(fromIndent && { order_number: order_number }),
+          ...(!fromIndent && { purchase_id: order_number }),
           product_id: product.product_id,
           name: product.name,
           quantity: Number(product.quantity),

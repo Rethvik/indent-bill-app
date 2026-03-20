@@ -53,11 +53,13 @@ function Indent() {
   const getIndentOfCustomer = async (id, date) => {
     let params = { id, date };
     params = new URLSearchParams(params);
+    showLoader(true);
     const response = await fetch(
       `http://localhost:3000/api/indent/get?${params}`,
       { method: "GET" },
     );
     const result = await response.json();
+    showLoader(false);
     return result;
   };
 
@@ -134,7 +136,7 @@ function Indent() {
 
   // To save the newly added or edited indent
   const saveButtonHandler = async (indent) => {
-    if (Object.keys(indent).length > 0) {
+    if (indent.length > 0) {
       closeAddEditDialogHandler();
       showLoader(true);
       const response = await fetch("http://localhost:3000/api/indent/save", {
@@ -199,6 +201,7 @@ function Indent() {
             date: date,
           }}
           open={showAddEditDialog}
+          closeDialogHandler={closeAddEditDialogHandler}
         >
           <NewIndent
             key={rowData.id}
