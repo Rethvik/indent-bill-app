@@ -103,6 +103,7 @@ const saveIndent = async (orderInfo, type, date) => {
               existingOrderItemsResult.data[0].order_number,
               prices,
               "new",
+              true,
             );
             if (orderItemsResult.success) {
               const result = await insert("order_items", orderItemsResult.data);

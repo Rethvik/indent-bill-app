@@ -82,11 +82,15 @@ const tableHeaders = [
   { accessorKey: "quantity", title: "Quantity" },
   { accessorKey: "unit", title: "Unit" },
   { accessorKey: "total_amount", title: "Amount" },
+  { accessorKey: "crates", title: "Crates" },
 ];
 
 function ViewIndent({ data }) {
   const totalAmount = data.reduce((acc, current) => {
     return acc + current.total_amount;
+  }, 0);
+  const totalCrates = data.reduce((acc, current) => {
+    return acc + current.crates;
   }, 0);
   return (
     <>
@@ -94,6 +98,7 @@ function ViewIndent({ data }) {
         data={data}
         tableHeaders={tableHeaders}
         totalAmount={totalAmount}
+        totalCrates={totalCrates}
       />
     </>
   );

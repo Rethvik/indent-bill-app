@@ -15,6 +15,8 @@ const getSupplierPurchaseToView = async (date, id) => {
     total_amount,
     purchase_id,
     id,
+    crates,
+    crate_value,
     products!inner (
       unit,
       category,
@@ -43,6 +45,8 @@ const getSupplierPurchaseToView = async (date, id) => {
       display_order: item.products.display_order,
       tax_rate: item.products.tax_rate,
       offer: item.products.offer,
+      crates: item.crates ? item.crates : 0,
+      crate_value: item.crate_value ? item.crate_value : 0,
     }));
     data = sortProductsBasedonDisplayOrder(data);
     return { success: true, data };

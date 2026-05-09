@@ -3,7 +3,14 @@ import logger from "../../utils/log";
 import sortProductsBasedonDisplayOrder from "./sortProducts";
 const getProducts = async () => {
   try {
-    const result = await select("products", "*", []);
+    const filters = [
+      {
+        operator: "eq",
+        columnName: "active",
+        value: true,
+      },
+    ];
+    const result = await select("products", "*", filters);
     if (result.success) {
       const productsSorted = sortProductsBasedonDisplayOrder(result.data);
       return {

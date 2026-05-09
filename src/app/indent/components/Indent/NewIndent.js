@@ -79,7 +79,6 @@ function NewIndent({ saveButtonHandler, closeDialogHandler, customerIndent }) {
 
   const showLoader = useShowLoader((state) => state.showLoader);
   const showMessage = useShowMessage((state) => state.showMessage);
-
   useEffect(() => {
     if (fetchDone.current) {
       return;

@@ -27,6 +27,11 @@ const generateOrderItems = async (
           unit_price: prices[String(product.product_id)],
           tax_rate: product.tax_rate,
           total_amount: total_amount,
+          crates: +parseFloat(
+            Number(product.quantity) / Number(product.crate_value),
+          ).toFixed(1),
+          crate_value: product.crate_value || 0,
+          updated_at: new Date(),
         };
       } else {
         return {
@@ -39,6 +44,10 @@ const generateOrderItems = async (
           unit_price: prices[String(product.product_id)],
           tax_rate: product.tax_rate,
           total_amount: total_amount,
+          crates: +parseFloat(
+            Number(product.quantity) / Number(product.crate_value),
+          ).toFixed(1),
+          updated_at: new Date(),
         };
       }
     });
