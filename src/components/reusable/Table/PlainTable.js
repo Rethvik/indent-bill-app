@@ -23,9 +23,11 @@ function PlainTable({
   updatePayment,
   totalSaleValue,
   totalPaymentReceived,
+  deletePayment,
+  allowEditInput,
 }) {
   return (
-    <ScrollArea className="h-110">
+    <ScrollArea>
       <Table>
         <TableHeader className="sticky top-0 z-10 bg-white">
           <TableRow>
@@ -60,14 +62,21 @@ function PlainTable({
                     );
                   })}
                   {showInput && (
-                    <TableCell className="border border-border text-center w-150">
+                    <TableCell className="border border-border text-center w-100">
                       {
                         <InputComponent
                           row={item}
-                          disabled={focusedRow ? focusedRow !== item.id : false}
+                          disabled={
+                            allowEditInput
+                              ? focusedRow
+                                ? focusedRow !== item.customer_id
+                                : false
+                              : true
+                          }
                           focusedRow={focusedRow}
                           setFocusedRow={setFocusedRow}
                           updatePayment={updatePayment}
+                          deletePayment={deletePayment}
                         />
                       }
                     </TableCell>
@@ -86,7 +95,7 @@ function PlainTable({
             </TableRow>
           )}
         </TableBody>
-        {totalAmount && (
+        {data.length > 0 && totalAmount && (
           <TableFooter>
             <TableRow>
               <TableCell
@@ -104,12 +113,12 @@ function PlainTable({
             </TableRow>
           </TableFooter>
         )}
-        {totalSaleValue && (
+        {data.length > 0 && (!!totalSaleValue || !!totalPaymentReceived) && (
           <TableFooter>
             <TableRow>
               <TableCell
                 className="border border-border text-center"
-                colSpan={2}
+                colSpan={3}
               >
                 Total
               </TableCell>

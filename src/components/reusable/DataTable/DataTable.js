@@ -11,6 +11,7 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
@@ -30,6 +31,7 @@ export function DataTable({
   height = 400,
   datePicker,
   getDateValue,
+  footerContent,
   selected = () => {
     return;
   },
@@ -60,7 +62,7 @@ export function DataTable({
   }, [selected, table, rowSelection]);
   return (
     <div>
-      {(filter || datePicker) && (
+      {(filter || datePicker || button) && (
         <div className="flex items-center justify-between py-4">
           {filter && (
             <Input
@@ -79,8 +81,11 @@ export function DataTable({
 
           <>
             {button?.show && (
-              <Button variant={button.variant}>
-                {button.icon}
+              <Button
+                onClick={button.onClick && button.onClick}
+                variant={button.variant}
+              >
+                {button.icon && button.icon}
                 {button.label}
               </Button>
             )}
@@ -89,7 +94,9 @@ export function DataTable({
         </div>
       )}
       <div className="overflow-hidden rounded-md border">
-        <ScrollArea className={`h-[420px] w-full rounded-md border`}>
+        <ScrollArea
+          className={`overflow-auto max-h-[400px] w-full rounded-md border`}
+        >
           <Table>
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
@@ -142,6 +149,19 @@ export function DataTable({
                 </TableRow>
               )}
             </TableBody>
+            {footerContent && (
+              <TableFooter>
+                <TableRow>
+                  <TableCell
+                    className="text-left"
+                    colSpan={footerContent.colSpan ? footerContent.colSpan : 1}
+                  >
+                    Total
+                  </TableCell>
+                  <TableCell>{footerContent.total}</TableCell>
+                </TableRow>
+              </TableFooter>
+            )}
           </Table>
         </ScrollArea>
       </div>

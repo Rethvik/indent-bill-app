@@ -63,9 +63,12 @@ const remove = async (table, filter) => {
   }
 };
 
-const upsert = async (table, rows) => {
+const upsert = async (table, rows, onConflict = "") => {
   try {
-    const { data, error } = await supabase.from(table).upsert(rows).select();
+    const { data, error } = await supabase
+      .from(table)
+      .upsert(rows, onConflict && { onConflict: onConflict })
+      .select();
     if (error) {
       return { success: false, message: error.message };
     }

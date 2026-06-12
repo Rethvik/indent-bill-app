@@ -31,10 +31,23 @@ function isValidDate(date) {
   }
   return !isNaN(date.getTime());
 }
+function isFutureDate(date) {
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  tomorrow.setHours(23, 59, 59, 999);
 
-export default React.memo(function DatePicker({ label, getDateValue }) {
-  const firstDate = new Date();
+  return date > tomorrow;
+}
+export default React.memo(function DatePicker({
+  label,
+  getDateValue,
+  disableDateHandler,
+}) {
+  let firstDate = new Date();
+
   firstDate.setDate(firstDate.getDate() + 1);
+
+  console.log(firstDate);
   const [open, setOpen] = React.useState(false);
   const [date, setDateValue] = React.useState(firstDate);
   const [month, setMonth] = React.useState(date);
@@ -102,6 +115,11 @@ export default React.memo(function DatePicker({ label, getDateValue }) {
               month={month}
               onMonthChange={setMonth}
               endMonth={new Date("2030-12-31")}
+              disabled={
+                disableDateHandler
+                  ? (date) => disableDateHandler(date)
+                  : (date) => isFutureDate(date)
+              }
               onSelect={(date) => {
                 if (date) {
                   fetchDone.current = false;

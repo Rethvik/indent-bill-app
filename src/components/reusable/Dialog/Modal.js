@@ -7,6 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Separator } from "@/components/ui/separator";
 
 export function Modal({
   open,
@@ -14,17 +15,19 @@ export function Modal({
   children,
   dialogData,
   cancelButtonHandler,
+  style,
 }) {
   return (
     <Dialog open={open} onOpenChange={closeDialogHandler}>
       <DialogContent
-        className={`${dialogData?.heigWidt}`}
+        style={style && { ...style }}
         onInteractOutside={(e) => e.preventDefault()}
         onEscapeKeyDown={(e) => e.preventDefault()}
       >
         <DialogHeader>
           <DialogTitle>{dialogData?.title}</DialogTitle>
           <DialogDescription>{dialogData?.desc}</DialogDescription>
+          <Separator />
         </DialogHeader>
         <div>{children}</div>
         <DialogFooter>

@@ -8,6 +8,7 @@ const PaymentInput = ({
   setFocusedRow,
   disabled,
   updatePayment,
+  deletePayment,
 }) => {
   const [inputValue, setInputValue] = useState("");
   const [error, setError] = useState(false);
@@ -19,16 +20,25 @@ const PaymentInput = ({
   };
 
   const focusHandler = (e) => {
-    setFocusedRow(row.id);
+    setFocusedRow(row.customer_id);
   };
 
   const checkButtonHandler = () => {
-    if (inputValue === "") {
+    if (
+      inputValue === "" ||
+      row.paymentReceived === Number(inputValue) ||
+      (row.paymentReceived === 0 && Number(inputValue) === 0)
+    ) {
       setError(true);
       return;
     }
-    console.log("Payment Updated for ", row.name, " with amount ", inputValue);
-    updatePayment(row.id, inputValue);
+    if (row.paymentReceived !== 0 && Number(inputValue) === 0) {
+      deletePayment(row.customer_id);
+      console.log("Zero check");
+    } else {
+      updatePayment(row.customer_id, inputValue);
+    }
+
     setFocusedRow(null);
     setInputValue("");
     setError(false);
@@ -54,7 +64,7 @@ const PaymentInput = ({
         disabled={disabled}
         aria-invalid={error}
       />
-      {row.id === focusedRow && (
+      {row.customer_id === focusedRow && (
         <div className="ml-3">
           <Button
             onClick={checkButtonHandler}

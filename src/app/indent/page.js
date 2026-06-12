@@ -184,7 +184,6 @@ function Indent() {
             title: `${rowData.customerName}'s Indent`,
             desc: "",
             okButtonTitle: "OK",
-            heigWidt: "h-150 w-170",
           }}
           open={showViewDialog}
           closeDialogHandler={closeViewDialogHandler}

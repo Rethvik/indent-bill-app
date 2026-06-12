@@ -33,7 +33,7 @@ const menuItems = [
   { title: "Inventory", url: "/inventory", icon: Package },
   { title: "Payments", url: "/payments", icon: IndianRupee },
   { title: "Customers", url: "/customers", icon: UserRound },
-  { title: "Expense", url: "/", icon: BanknoteArrowDown },
+  { title: "Expense", url: "/expenses", icon: BanknoteArrowDown },
 ];
 function SideNav() {
   return (
