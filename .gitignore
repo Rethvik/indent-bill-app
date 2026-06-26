@@ -33,7 +33,7 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 secrets.json
-/src/api/constants/sheetsConstant.js
+/src/app/api/constants/sheetsConstant.js
 
 # vercel
 .vercel
