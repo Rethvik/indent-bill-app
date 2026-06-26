@@ -1,16 +1,9 @@
-import { select } from "../../supabase/supabase";
-import logger from "../../utils/log";
+import logger from "../../utils/log/index";
+import { getProducts } from "../../lib/db";
 import sortProductsBasedonDisplayOrder from "./sortProducts";
-const getProducts = async () => {
+const getProductsInfo = async () => {
   try {
-    const filters = [
-      {
-        operator: "eq",
-        columnName: "active",
-        value: true,
-      },
-    ];
-    const result = await select("products", "*", filters);
+    const result = await getProducts();
     if (result.success) {
       const productsSorted = sortProductsBasedonDisplayOrder(result.data);
       return {
@@ -33,4 +26,4 @@ const getProducts = async () => {
     };
   }
 };
-export default getProducts;
+export default getProductsInfo;

@@ -1,9 +1,9 @@
 const { NextResponse } = require("next/server");
-import getProducts from "./util/productUtils";
+import getProductsInfo from "./util/productUtils";
 
 export const GET = async () => {
   try {
-    const result = await getProducts();
+    const result = await getProductsInfo();
     return NextResponse.json(result);
   } catch (e) {
     console.log(e);

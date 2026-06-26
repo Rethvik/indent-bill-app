@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import getCustomers from "./getCustomers";
+import getCustomersInfo from "./getCustomersInfo.js";
 // import api from "@/lib/api";
 
 export async function GET(req, res) {
@@ -8,7 +8,7 @@ export async function GET(req, res) {
     // console.log(response.data)
     // Need to write API call from SWIPE to fetch all customers and cusomer_id in loadCustomers File
     // Till then using hardcoded one
-    const result = await getCustomers();
+    const result = await getCustomersInfo();
     return NextResponse.json(result);
   } catch (e) {
     return NextResponse.json({ error: e });

@@ -5,7 +5,7 @@ import React, { useEffect, useState, useCallback, useRef } from "react";
 import columns from "./data/columns";
 import Loader from "@/components/reusable/Loader/Loader";
 import { useShowLoader, useShowMessage } from "@/store/store";
-import { api } from "@/lib/api";
+
 function Customers() {
   const [customers, setCustomers] = useState([]);
   const loader = useShowLoader((state) => state.loader);

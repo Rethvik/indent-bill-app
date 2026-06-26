@@ -1,4 +1,4 @@
-import getCustomers from "../../customers/getCustomers";
+import getCustomers from "../../customers/getCustomersInfo";
 import logger from "../../utils/log";
 import convertDateToDB from "../../utils/convertDate";
 import { select } from "../../supabase/supabase";
