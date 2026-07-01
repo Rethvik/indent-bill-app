@@ -170,7 +170,6 @@ function PaymentsTable() {
       setDisabled(true);
     }
   };
-  console.log(disabled);
   return (
     <>
       {loader && <Loader />}

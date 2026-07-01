@@ -1,4 +1,4 @@
-import getSuppliers from "../../suppliers/getSuppliers";
+import getSuppliersInfo from "../../suppliers/getSuppliersInfo";
 import isDateInLimit from "../../utils/isDateInLimit";
 
 const { select } = require("../../supabase/supabase");
@@ -6,7 +6,7 @@ const { default: convertDateToDB } = require("../../utils/convertDate");
 
 const getPurchase = async (purchaseDate) => {
   try {
-    const supplierResult = await getSuppliers();
+    const supplierResult = await getSuppliersInfo();
     if (supplierResult.success) {
       const dbDate = convertDateToDB(purchaseDate);
       const purchaseResult = await select("purchases", "*", [

@@ -8,7 +8,6 @@ export async function GET() {
     range: "Sheet1",
   });
   const rows = response.data.values;
-  console.log(rows);
   const headers = rows[0];
   const records = rows.slice(1).map((row) => {
     const obj = {};
@@ -18,6 +17,5 @@ export async function GET() {
     return obj;
   });
 
-  console.log({ headers, records });
   return NextResponse.json({ message: "From Home Page" });
 }

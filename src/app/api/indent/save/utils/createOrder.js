@@ -1,4 +1,5 @@
 import { insert } from "@/app/api/supabase/supabase";
+import logger from "@/app/api/utils/log";
 
 const createOrder = async (order, tableName) => {
   try {

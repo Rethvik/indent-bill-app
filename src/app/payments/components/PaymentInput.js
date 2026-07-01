@@ -34,7 +34,6 @@ const PaymentInput = ({
     }
     if (row.paymentReceived !== 0 && Number(inputValue) === 0) {
       deletePayment(row.customer_id);
-      console.log("Zero check");
     } else {
       updatePayment(row.customer_id, inputValue);
     }

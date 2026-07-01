@@ -1,16 +1,14 @@
 import getCustomers from "../../customers/getCustomersInfo";
 import logger from "../../utils/log";
 import convertDateToDB from "../../utils/convertDate";
-import { select } from "../../supabase/supabase";
+import { getIndent } from "../../lib/db";
 import isDateInLimit from "../../utils/isDateInLimit";
-const getIndent = async (indentDate) => {
+const getIndentFromDB = async (indentDate) => {
   try {
     const customersResult = await getCustomers();
-    const formattedDate = convertDateToDB(indentDate);
     if (customersResult.success) {
-      const result = await select("orders", "customer_id", [
-        { operator: "eq", columnName: "order_date", value: formattedDate },
-      ]);
+      const formattedDate = convertDateToDB(indentDate);
+      const result = await getIndent(formattedDate);
 
       // If the result is not success
       if (!result.success) {
@@ -67,8 +65,9 @@ const getIndent = async (indentDate) => {
       return customersResult;
     }
   } catch (err) {
-    logger("error", `Error in getIndent file ${err.message}`);
+    logger("error", `Error in getIndentFromDB file ${err.message}`);
+    console.log(err);
     return { success: false, message: err.message };
   }
 };
-export default getIndent;
+export default getIndentFromDB;

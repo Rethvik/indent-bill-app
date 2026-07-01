@@ -47,7 +47,6 @@ export default React.memo(function DatePicker({
 
   firstDate.setDate(firstDate.getDate() + 1);
 
-  console.log(firstDate);
   const [open, setOpen] = React.useState(false);
   const [date, setDateValue] = React.useState(firstDate);
   const [month, setMonth] = React.useState(date);

@@ -22,3 +22,17 @@ export async function getProducts() {
   const result = await primary.getProducts();
   return result;
 }
+
+export async function getSuppliers() {
+  const providers = getProvider();
+  const [primary] = providers;
+  const result = await primary.getSuppliers();
+  return result;
+}
+
+export async function getIndent(selectedDate) {
+  const providers = getProvider();
+  const [primary] = providers;
+  const result = await primary.getIndent(selectedDate);
+  return result;
+}

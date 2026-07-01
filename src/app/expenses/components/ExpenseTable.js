@@ -83,7 +83,6 @@ const ExpenseDataTable = () => {
   };
 
   const saveNewExpenseHandler = (expenseData) => {
-    console.log("Expense Data from Form", expenseData);
     const hasExpense = expenses.some(
       (expense) => String(expense.id) === String(expenseData.id),
     );

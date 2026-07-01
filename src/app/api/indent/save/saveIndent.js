@@ -1,11 +1,14 @@
 import convertDateToDB from "../../utils/convertDate";
-import logger from "../../utils/log";
+// import logger from "../../utils/log/index.js";
 import createOrder from "./utils/createOrder";
 import generateOrderItems from "./utils/generateOrderItems";
 import getCustomerIndentToView from "../get/utils/getCustomerIndentToView";
 import getPrices from "./getPrices";
 import { insert, remove } from "../../supabase/supabase";
 import updateIndent from "./utils/updateIndent";
+import { generateID } from "../../utils/generateID";
+import quantityValidation from "./utils/quantityValidation";
+import logger from "../../utils/log/index";
 
 const saveIndent = async (orderInfo, type, date) => {
   try {
@@ -13,9 +16,14 @@ const saveIndent = async (orderInfo, type, date) => {
     let prices;
     // If order creation is new
     if (type === "new") {
+      const quantityCheckResult = quantityValidation(orderInfo.items);
+      if (!quantityCheckResult.success) {
+        return quantityCheckResult;
+      }
       const order = {
         customer_id: orderInfo.id,
         order_date: formattedDate,
+        order_number: generateID(),
       };
 
       // Sending data to create order in order table

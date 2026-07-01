@@ -60,3 +60,42 @@ export async function getProducts() {
     };
   }
 }
+
+export async function getSuppliers() {
+  try {
+    const filters = [
+      {
+        operator: "order",
+        columnName: "supplier_id",
+        value: { ascending: true },
+      },
+    ];
+    const result = await select("suppliers", "*", filters);
+    return result;
+  } catch (err) {
+    logger("error", `Error fetching suppliers: ${err.message}`);
+    return {
+      success: false,
+      error: err,
+      message: err.message,
+      showMessage: true,
+    };
+  }
+}
+
+export async function getIndent(selectedDate) {
+  try {
+    const result = await select("orders", "customer_id", [
+      { operator: "eq", columnName: "order_date", value: selectedDate },
+    ]);
+    return result;
+  } catch (err) {
+    logger("error", `Error fetching indent: ${err.message}`);
+    return {
+      success: false,
+      error: err,
+      message: err.message,
+      showMessage: true,
+    };
+  }
+}

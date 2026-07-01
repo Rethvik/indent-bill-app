@@ -86,9 +86,11 @@ const tableHeaders = [
 ];
 
 function ViewIndent({ data }) {
-  const totalAmount = data.reduce((acc, current) => {
-    return acc + current.total_amount;
-  }, 0);
+  const totalAmount = +parseFloat(
+    data.reduce((acc, current) => {
+      return acc + current.total_amount;
+    }, 0),
+  ).toFixed(0);
   const totalCrates = data.reduce((acc, current) => {
     return acc + current.crates;
   }, 0);

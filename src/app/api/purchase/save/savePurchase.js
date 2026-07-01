@@ -3,6 +3,7 @@ import generateOrderItems from "../../indent/save/utils/generateOrderItems";
 import updateIndent from "../../indent/save/utils/updateIndent";
 import { insert, remove } from "../../supabase/supabase";
 import convertDateToDB from "../../utils/convertDate";
+import { generateID } from "../../utils/generateID";
 import logger from "../../utils/log";
 import getSupplierPurchaseToView from "../get/utils/getSupplierPurchaseToView";
 import getPurchasePrices from "./utils/getPurchasePrices";
@@ -15,6 +16,7 @@ const savePurchase = async (purchaseInfo, type, date) => {
       const order = {
         supplier_id: purchaseInfo.id,
         purchase_date: formattedDate,
+        purchase_id: generateID(),
       };
 
       // Sending data to create order in purchases table
@@ -150,6 +152,7 @@ const savePurchase = async (purchaseInfo, type, date) => {
     }
   } catch (err) {
     logger("error", `Error in save purchase file ${err.message}`);
+    console.log(err);
     return { success: false, message: err.message, error: err };
   }
 };

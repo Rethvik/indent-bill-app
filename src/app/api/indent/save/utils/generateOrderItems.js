@@ -1,3 +1,4 @@
+import { generateID } from "@/app/api/utils/generateID";
 import logger from "@/app/api/utils/log";
 
 const generateOrderItems = async (
@@ -9,7 +10,7 @@ const generateOrderItems = async (
 ) => {
   try {
     // Generating order items as per supabase schema
-    const order_items = orderItems.map((product) => {
+    const order_items = orderItems.map((product, index) => {
       const baseAmount = +parseFloat(
         Number(product.quantity) * prices[String(product.product_id)],
       ).toFixed(2);
@@ -22,6 +23,7 @@ const generateOrderItems = async (
           ...(fromIndent && { order_number: order_number }),
           ...(!fromIndent && { purchase_id: order_number }),
           product_id: product.product_id,
+          id: generateID(index),
           name: product.name,
           quantity: Number(product.quantity),
           unit_price: prices[String(product.product_id)],

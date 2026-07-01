@@ -1,11 +1,11 @@
 import { NextResponse, NextRequest } from "next/server";
-import getIndent from "./utils/getIndent";
+import getIndentFromDB from "./utils/getIndentFromDB";
 
 export async function POST(req) {
   try {
     const body = await req.json();
     let { selectedDate } = body;
-    const result = await getIndent(selectedDate);
+    const result = await getIndentFromDB(selectedDate);
     return NextResponse.json(result);
   } catch (err) {
     console.log(err);

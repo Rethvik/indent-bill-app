@@ -5,7 +5,6 @@ const GET = async (req) => {
   try {
     const { searchParams } = new URL(req.url);
     const selectedDate = searchParams.get("selectedDate");
-    console.log(selectedDate);
     const result = await getPurchase(selectedDate);
     return NextResponse.json(result, { status: result.success ? 200 : 400 });
   } catch (err) {
