@@ -27,7 +27,11 @@ const saveIndent = async (orderInfo, type, date) => {
       };
 
       // Sending data to create order in order table
-      const orderCreationResult = await createOrder(order, "orders");
+      const orderCreationResult = await createOrder(
+        order,
+        "orders",
+        formattedDate,
+      );
       if (orderCreationResult.success) {
         logger(
           "success",

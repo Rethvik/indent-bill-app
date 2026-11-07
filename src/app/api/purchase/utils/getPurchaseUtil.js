@@ -1,21 +1,14 @@
 import getSuppliersInfo from "../../suppliers/getSuppliersInfo";
 import isDateInLimit from "../../utils/isDateInLimit";
+import { getPurchase } from "../../lib/db";
+import convertDateToDB from "../../utils/convertDate";
 
-const { select } = require("../../supabase/supabase");
-const { default: convertDateToDB } = require("../../utils/convertDate");
-
-const getPurchase = async (purchaseDate) => {
+const getPurchaseUtil = async (purchaseDate) => {
   try {
     const supplierResult = await getSuppliersInfo();
     if (supplierResult.success) {
       const dbDate = convertDateToDB(purchaseDate);
-      const purchaseResult = await select("purchases", "*", [
-        {
-          operator: "eq",
-          columnName: "purchase_date",
-          value: dbDate,
-        },
-      ]);
+      const purchaseResult = await getPurchase(dbDate);
       if (purchaseResult.success) {
         const selectedDate = new Date(purchaseDate);
         const currentDate = new Date();
@@ -69,4 +62,4 @@ const getPurchase = async (purchaseDate) => {
   }
 };
 
-export default getPurchase;
+export default getPurchaseUtil;

@@ -1,4 +1,4 @@
-import { select } from "../../../supabase/supabase";
+import { select, insert } from "../../../supabase/supabase";
 import logger from "../../../utils/log/index";
 export async function getCustomers() {
   try {
@@ -97,5 +97,62 @@ export async function getIndent(selectedDate) {
       message: err.message,
       showMessage: true,
     };
+  }
+}
+
+export async function getPurchase(selectedDate) {
+  try {
+    const purchaseResult = await select("purchases", "*", [
+      {
+        operator: "eq",
+        columnName: "purchase_date",
+        value: selectedDate,
+      },
+    ]);
+    return purchaseResult;
+  } catch (err) {
+    logger("error", `Error fetching purchase: ${err.message}`);
+    return {
+      success: false,
+      error: err,
+      message: err.message,
+      showMessage: true,
+    };
+  }
+}
+
+export async function createOrderLib(order, tableName, date) {
+  try {
+    const result = await insert(tableName, order);
+    if (!result.success) {
+      logger(
+        "error",
+        `Error from supabase in creating new order ${result.message}`,
+      );
+      return { success: false, showMessage: true, message: result.message };
+    }
+    return {
+      success: true,
+      order_number: result.data[0].order_number || result.data[0].purchase_id,
+    };
+  } catch (err) {
+    logger("error", `Error creating order: ${err.message}`);
+    return {
+      success: false,
+      error: err,
+      message: err.message,
+      showMessage: true,
+    };
+  }
+}
+
+export async function getPriceListLib(data) {
+  try {
+    const { tableName, filter } = data;
+    const priceListResult = await select(tableName, "price_list", [filter]);
+    return priceListResult;
+  } catch (err) {
+    logger("error", `Error while getting price list ${err.message}`);
+    return { success: false, message: err.message, showMessage: true };
   }
 }

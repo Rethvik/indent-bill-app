@@ -1,10 +1,14 @@
 import logger from "@/app/api/utils/log";
 
-import { select } from "@/app/api/supabase/supabase";
+import { getPriceListLib } from "@/app/api/lib/db";
 
-const getPriceList = async (id, tableName, filter) => {
+const getPriceList = async (customerID, tableName, filter) => {
   try {
-    const priceListResult = await select(tableName, "price_list", [filter]);
+    const priceListResult = await getPriceListLib({
+      customerID,
+      tableName,
+      filter,
+    });
     if (!priceListResult.success) {
       logger(
         "error",

@@ -10,6 +10,10 @@ const paymentToDb = async ({ date, customer_id, payment_received }) => {
     },
   ];
   const result = await upsert("payments", data, "customer_id, payment_date");
-  return { ...result, showMessage: true };
+  return {
+    ...result,
+    showMessage: true,
+    message: "Payment saved successfully",
+  };
 };
 export default paymentToDb;

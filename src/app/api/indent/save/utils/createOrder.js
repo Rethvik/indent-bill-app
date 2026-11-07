@@ -1,14 +1,10 @@
-import { insert } from "@/app/api/supabase/supabase";
 import logger from "@/app/api/utils/log";
-
-const createOrder = async (order, tableName) => {
+import { createOrderLib } from "@/app/api/lib/db";
+const createOrder = async (order, tableName, date) => {
   try {
-    const result = await insert(tableName, order);
+    const result = await createOrderLib(order, tableName, date);
+    // const result = await insert(tableName, order);
     if (!result.success) {
-      logger(
-        "error",
-        `Error from supabase in creating new order ${result.message}`,
-      );
       return { success: false, showMessage: true, message: result.message };
     }
     return {

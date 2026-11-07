@@ -1,7 +1,10 @@
 import * as supabaseProvider from "./providers/supabase/index";
 import * as googleSheetsProvider from "./providers/sheets/index";
 
+// While changing provider, make sure to change secondary as well
 const provider = process.env.DB_PROVIDER || "google-sheets";
+
+const secondary = googleSheetsProvider;
 
 function getProvider() {
   if (provider === "supabase") return [supabaseProvider];
@@ -34,5 +37,27 @@ export async function getIndent(selectedDate) {
   const providers = getProvider();
   const [primary] = providers;
   const result = await primary.getIndent(selectedDate);
+  return result;
+}
+
+export async function getPurchase(selectedDate) {
+  const providers = getProvider();
+  const [primary] = providers;
+  const result = await primary.getPurchase(selectedDate);
+  return result;
+}
+
+export async function createOrderLib(order, tableName, date) {
+  const providers = getProvider();
+  const [primary] = providers;
+  const result = await primary.createOrderLib(order, tableName, date);
+  // secondary.createOrder(order, tableName);
+  return result;
+}
+
+export async function getPriceListLib(data) {
+  const providers = getProvider();
+  const [primary] = providers;
+  const result = await primary.getPriceListLib(data);
   return result;
 }

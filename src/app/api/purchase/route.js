@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import logger from "../utils/log";
-import getPurchase from "./utils/getPurchase";
+import getPurchase from "./utils/getPurchaseUtil";
 const GET = async (req) => {
   try {
     const { searchParams } = new URL(req.url);
